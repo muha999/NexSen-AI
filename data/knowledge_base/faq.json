@@ -1,0 +1,26 @@
+{
+  "entreprise": "Boutique Lumière",
+  "description": "Boutique en ligne de produits de beauté et bien-être",
+  "faq": [
+    {
+      "question": "Quels sont vos délais de livraison ?",
+      "reponse": "Nos délais de livraison sont de 2 à 5 jours ouvrables pour Dakar et 5 à 10 jours pour les autres régions."
+    },
+    {
+      "question": "Comment puis-je retourner un produit ?",
+      "reponse": "Vous avez 7 jours après réception pour retourner un produit. Contactez-nous sur WhatsApp au +221 XX XXX XX XX."
+    },
+    {
+      "question": "Quels sont vos moyens de paiement ?",
+      "reponse": "Nous acceptons Wave, Orange Money et le paiement à la livraison."
+    },
+    {
+      "question": "Comment suivre ma commande ?",
+      "reponse": "Envoyez votre numéro de commande sur notre WhatsApp et nous vous donnons le statut en temps réel."
+    },
+    {
+      "question": "Livrez-vous en dehors du Sénégal ?",
+      "reponse": "Pour le moment nous livrons uniquement au Sénégal. Une expansion internationale est prévue."
+    } 
+]
+}
