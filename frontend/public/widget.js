@@ -144,7 +144,7 @@
   chatBox.id = "nexsen-chat-box";
   chatBox.innerHTML = `
     <div id="nexsen-chat-header">
-      <img src="http://127.0.0.1:3000/aicha_profile.png" onerror="this.style.display='none'" />
+      <img src="http://127.0.0.1:3000/static/media/aichaprofile.png" onerror="this.style.display='none'" />
       <div id="nexsen-agent-info">
         <div class="name">AICHA</div>
         <div class="status">● En ligne — NexSen AI</div>
