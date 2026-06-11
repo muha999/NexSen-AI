@@ -10,6 +10,9 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from agents.aicha.aicha import aicha_respond
 from agents.ibrahima.ibrahima import ibrahima_evaluate
 from agents.muha.muha import muha_route
+from agents.fabi.fabi import fabi_analyze
+from agents.zara.zara import zara_respond
+from agents.dija.dija import dija_respond
 
 app = FastAPI(title="NexSen AI", description="Multi-Agent AI System")
 
@@ -39,7 +42,7 @@ class ChatResponse(BaseModel):
 def health():
     return {
         "status": "NexSen AI is running 🚀",
-        "agents": ["MUHA", "AICHA", "IBRAHIMA", "FABI", "ZARA", "DIJA"]
+        "agents": ["MUHA", "AICHA", "FABI", "ZARA", "DIJA", "IBRAHIMA"]
     }
 
 @app.post("/chat", response_model=ChatResponse)
@@ -51,22 +54,22 @@ def chat(request: ChatRequest):
     agent_name = routing.get("agent", "AICHA")
     message_transforme = routing.get("message_transforme", request.message)
 
-    # Pour l instant seule AICHA est codée
+    # Chaque agent répond selon son domaine
     if agent_name == "AICHA":
         response = aicha_respond(message_transforme, history)
     elif agent_name == "FABI":
-        response = f"📊 FABI est en cours de développement. Votre demande d'analyse a été enregistrée."
+        response = fabi_analyze(message_transforme, None, history)
     elif agent_name == "ZARA":
-        response = f"💼 ZARA est en cours de développement. Votre demande commerciale a été enregistrée."
+        response = zara_respond(message_transforme, None, history)
     elif agent_name == "DIJA":
-        response = f"👥 DIJA est en cours de développement. Votre demande de recrutement a été enregistrée."
+        response = dija_respond(message_transforme, None, history)
     else:
         response = aicha_respond(message_transforme, history)
 
     # IBRAHIMA évalue
     evaluation = ibrahima_evaluate(request.message, response, agent_name)
 
-    # Si score trop bas reformuler
+    # Si score trop bas AICHA reformule
     if evaluation.get("score", 10) < 5 and agent_name == "AICHA":
         response = aicha_respond(
             message_transforme + " (Reformule de façon plus précise et polie)",
@@ -80,7 +83,6 @@ def chat(request: ChatRequest):
         routing=routing
     )
 
-# Ancienne route AICHA directe — gardée pour compatibilité
 @app.post("/aicha/chat", response_model=ChatResponse)
 def chat_with_aicha(request: ChatRequest):
     history = [{"role": m.role, "content": m.content} for m in request.history]
