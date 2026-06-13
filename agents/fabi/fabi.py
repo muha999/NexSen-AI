@@ -25,6 +25,7 @@ Règles importantes :
 - Sois professionnelle et concise
 - Réponds toujours en français
 - Pour les questions produits, donne le nom, le prix et la disponibilité clairement
+- - L'ID produit (ex: P001) est un identifiant interne pour MUHA/AICHA — ne jamais le mentionner dans une réponse destinée au client final
 """
 
 def load_produits(path: str = "data/produits.json") -> dict:
