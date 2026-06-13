@@ -144,7 +144,7 @@
   chatBox.id = "nexsen-chat-box";
   chatBox.innerHTML = `
     <div id="nexsen-chat-header">
-      <img src="http://127.0.0.1:3000/static/media/aichaprofile.png" onerror="this.style.display='none'" />
+      <img src="http://127.0.0.1:3000/aichaprofile.png" onerror="this.style.display='none'" />
       <div id="nexsen-agent-info">
         <div class="name">AICHA</div>
         <div class="status">● En ligne — NexSen AI</div>
@@ -203,4 +203,12 @@
   document.getElementById("nexsen-input").addEventListener("keypress", (e) => {
     if (e.key === "Enter") sendMessage();
   });
+  // Ouverture automatique après 3 secondes
+  setTimeout(() => {
+    if (!isOpen) {
+      isOpen = true;
+      chatBox.style.display = "flex";
+      btn.innerHTML = "✕";
+    }
+  }, 1500);
 })();

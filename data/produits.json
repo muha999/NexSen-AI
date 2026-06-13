@@ -1,0 +1,32 @@
+{
+  "entreprise": "Lumière Dorée",
+  "produits": [
+    {
+      "id": "P001",
+      "nom": "Parfum Oud Royal",
+      "categorie": "parfum",
+      "prix": 15000,
+      "stock": 12,
+      "disponible": true,
+      "description": "Parfum longue tenue, notes boisées et orientales"
+    },
+    {
+      "id": "P002",
+      "nom": "Thiouraye Premium",
+      "categorie": "Encens",
+      "prix": 5000,
+      "stock": 0,
+      "disponible": false,
+      "description": "Encens artisanal parfum traditionnel"
+    },
+    {
+      "id": "P003",
+      "nom": "Ensemble Lingerie Dentelle",
+      "categorie": "Lingerie",
+      "prix": 12000,
+      "stock": 8,
+      "disponible": true,
+      "description": "Ensemble lingerie dentelle, plusieurs tailles disponibles"
+    }
+  ]
+}

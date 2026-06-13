@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Lumière Dorée — Boutique Beauté & Bien-être</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: Georgia, serif;
+      background: #0a0a0f;
+      color: #f4f1fe;
+    }
+    header {
+      background: linear-gradient(135deg, #1a1a2e, #0a0a0f);
+      padding: 60px 24px;
+      text-align: center;
+      border-bottom: 1px solid #2a2a40;
+    }
+    header h1 {
+      font-size: 42px;
+      color: #f5d061;
+      margin-bottom: 12px;
+    }
+    header p {
+      font-size: 18px;
+      color: #b9a6f7;
+    }
+    .produits {
+      max-width: 1000px;
+      margin: 60px auto;
+      padding: 0 24px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+    .produit {
+      background: #13131f;
+      border: 1px solid #2a2a40;
+      border-radius: 16px;
+      padding: 24px;
+      text-align: center;
+    }
+    .produit .icon {
+      font-size: 48px;
+      margin-bottom: 12px;
+    }
+    .produit h3 {
+      font-size: 20px;
+      color: #f4f1fe;
+      margin-bottom: 8px;
+    }
+    .produit p {
+      font-size: 15px;
+      color: #9a94c2;
+      margin-bottom: 12px;
+    }
+    .produit .prix {
+      font-size: 22px;
+      color: #f5d061;
+      font-weight: bold;
+    }
+    .produit .stock {
+      font-size: 13px;
+      margin-top: 8px;
+      font-weight: bold;
+    }
+    .stock.dispo { color: #5dcaa5; }
+    .stock.rupture { color: #e24b4a; }
+    footer {
+      text-align: center;
+      padding: 40px;
+      color: #9a94c2;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>✨ Lumière Dorée</h1>
+    <p>Boutique Beauté, Bien-être & Lingerie — Guediawaye, Dakar</p>
+  </header>
+
+  <div class="produits">
+    <div class="produit">
+      <div class="icon">🧴</div>
+      <h3>Parfum Oud Royal</h3>
+      <p>Notes boisées et orientales, longue tenue</p>
+      <div class="prix">15 000 FCFA</div>
+      <div class="stock dispo">● En stock</div>
+    </div>
+    <div class="produit">
+      <div class="icon">🕯️</div>
+      <h3>Thiouraye Premium</h3>
+      <p>Encens artisanal, parfum traditionnel</p>
+      <div class="prix">5 000 FCFA</div>
+      <div class="stock rupture">● Rupture de stock</div>
+    </div>
+    <div class="produit">
+      <div class="icon">👗</div>
+      <h3>Ensemble Lingerie Dentelle</h3>
+      <p>Plusieurs tailles disponibles</p>
+      <div class="prix">12 000 FCFA</div>
+      <div class="stock dispo">● En stock</div>
+    </div>
+  </div>
+
+  <footer>
+    💬 Une question ? AICHA est là pour vous aider — cliquez sur le bouton en bas à droite !
+  </footer>
+
+  <!-- Widget NexSen AI -->
+  <script src="widget.js"></script>
+</body>
+</html>

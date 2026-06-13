@@ -1,6 +1,7 @@
 from groq import Groq
 from dotenv import load_dotenv
 import os
+import json
 
 load_dotenv()
 
@@ -15,7 +16,7 @@ Ton rôle :
 - Générer des rapports clairs et structurés
 - Identifier des tendances et patterns
 - Répondre aux questions sur les chiffres et statistiques
-- Donner des recommandations basées sur les données
+- Vérifier la disponibilité et le prix des produits
 
 Règles importantes :
 - Toujours structurer ta réponse avec des sections claires
@@ -23,7 +24,21 @@ Règles importantes :
 - Si pas de données disponibles, demande les données nécessaires
 - Sois professionnelle et concise
 - Réponds toujours en français
+- Pour les questions produits, donne le nom, le prix et la disponibilité clairement
 """
+
+def load_produits(path: str = "data/produits.json") -> dict:
+    """
+    Charge les produits depuis le fichier JSON
+    """
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except FileNotFoundError:
+        return {"produits": []}
+    except Exception:
+        return {"produits": []}
+
 
 def fabi_analyze(user_message: str, data: dict = None, conversation_history: list = None) -> str:
     """
@@ -55,32 +70,28 @@ def fabi_analyze(user_message: str, data: dict = None, conversation_history: lis
         return f"⚠️ FABI est temporairement indisponible : {str(e)}"
 
 
+def fabi_check_produits(user_message: str, conversation_history: list = None) -> str:
+    """
+    FABI vérifie les produits disponibles selon la demande du client
+    Utilisée par MUHA pour la boucle de retraitement
+    """
+    produits_data = load_produits()
+    return fabi_analyze(user_message, produits_data, conversation_history)
+
+
 if __name__ == "__main__":
     print("📊 FABI est en ligne !\n")
 
-    donnees_test = {
-        "ventes": {
-            "janvier": 150000,
-            "fevrier": 175000,
-            "mars": 210000,
-            "avril": 195000,
-            "mai": 230000
-        },
-        "clients": 342,
-        "produit_top": "Parfum Luxe",
-        "region_top": "Dakar"
-    }
-
     questions = [
-        "Analyse les ventes et donne moi un rapport",
-        "Quelle est la tendance générale des ventes ?",
+        "Quels parfums avez-vous disponibles ?",
+        "Avez-vous du thiouraye en stock ?",
     ]
 
     history = []
 
     for question in questions:
         print(f"Question : {question}")
-        reponse = fabi_analyze(question, donnees_test, history)
+        reponse = fabi_check_produits(question, history)
         print(f"FABI : {reponse}\n")
         history.append({"role": "user", "content": question})
         history.append({"role": "assistant", "content": reponse})
