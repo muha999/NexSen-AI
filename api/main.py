@@ -10,7 +10,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from agents.aicha.aicha import aicha_respond
 from agents.ibrahima.ibrahima import ibrahima_evaluate
 from agents.muha.muha import muha_route
-from agents.fabi.fabi import fabi_analyze
+from agents.fabi.fabi import fabi_analyze, fabi_check_produits
 from agents.zara.zara import zara_respond
 from agents.dija.dija import dija_respond
 
@@ -38,6 +38,12 @@ class ChatResponse(BaseModel):
     evaluation: Optional[dict] = None
     routing: Optional[dict] = None
 
+# Signaux qui indiquent qu'AICHA ne peut pas répondre seule
+SIGNAUX_TRANSMISSION = [
+    "transmettre", "équipe humaine", "je vais vérifier",
+    "je n'ai pas", "pas d'informations", "pas accès"
+]
+
 @app.get("/health")
 def health():
     return {
@@ -57,6 +63,22 @@ def chat(request: ChatRequest):
     # Chaque agent répond selon son domaine
     if agent_name == "AICHA":
         response = aicha_respond(message_transforme, history)
+
+        # MUHA détecte si AICHA bloque sur une question produit
+        response_lower = response.lower()
+        if any(signal in response_lower for signal in SIGNAUX_TRANSMISSION):
+            # MUHA appelle FABI pour vérifier les produits
+            info_produits = fabi_check_produits(request.message, history)
+
+            # MUHA redonne le contexte enrichi à AICHA
+            prompt_enrichi = (
+                f"{request.message}\n\n"
+                f"Informations internes de FABI (NE PAS mentionner l'ID, "
+                f"reformule de façon concise et chaleureuse pour le client) :\n"
+                f"{info_produits}"
+            )
+            response = aicha_respond(prompt_enrichi, history)
+
     elif agent_name == "FABI":
         response = fabi_analyze(message_transforme, None, history)
     elif agent_name == "ZARA":
@@ -68,13 +90,6 @@ def chat(request: ChatRequest):
 
     # IBRAHIMA évalue
     evaluation = ibrahima_evaluate(request.message, response, agent_name)
-
-    # Si score trop bas AICHA reformule
-    if evaluation.get("score", 10) < 5 and agent_name == "AICHA":
-        response = aicha_respond(
-            message_transforme + " (Reformule de façon plus précise et polie)",
-            history
-        )
 
     return ChatResponse(
         response=response,

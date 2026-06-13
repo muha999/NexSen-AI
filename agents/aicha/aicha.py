@@ -37,9 +37,6 @@ def load_faq(faq_path: str = "data/knowledge_base/faq.json") -> str:
 
 
 def build_system_prompt() -> str:
-    """
-    Construit le system prompt avec la FAQ intégrée
-    """
     faq = load_faq()
 
     return f"""
@@ -54,6 +51,12 @@ Règles importantes :
 - Si la question n'est pas dans la FAQ, dis : "Je vais transmettre votre demande à notre équipe humaine."
 - Sois toujours polie et chaleureuse
 - Réponds de façon concise et claire
+- Pour le format : écris en phrases courtes avec des retours à la ligne. JAMAIS de tableaux, JAMAIS de listes à puces avec markdown (*, -, +). 
+- Pour présenter un ou plusieurs produits, utilise ce format structuré avec tirets et flèches :
+  - Nom du produit
+    -> Prix : 15 000 FCFA
+    -> Disponibilité : en stock
+- Pour le reste de tes réponses (questions générales, livraison, paiement), écris en phrases courtes et naturelles, sans tirets ni tableaux.
 """
 
 

@@ -82,15 +82,16 @@
     }
 
     .nexsen-msg-aicha {
-      align-self: flex-start;
-      background: #fff;
-      color: #1a1a2e;
-      padding: 10px 16px;
-      border-radius: 18px 18px 18px 4px;
-      max-width: 80%;
-      font-size: 15px;
-      line-height: 1.6;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    align-self: flex-start;
+    background: #fff;
+    color: #1a1a2e;
+    padding: 10px 16px;
+    border-radius: 18px 18px 18px 4px;
+    max-width: 80%;
+    font-size: 15px;
+    line-height: 1.6;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    white-space: pre-line;
     }
 
     #nexsen-input-area {
@@ -176,7 +177,7 @@
     input.value = "";
 
     try {
-      const res = await fetch(`${AICHA_API}/aicha/chat`, {
+      const res = await fetch(`${AICHA_API}/chat`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message: msg, history: conversationHistory }),
