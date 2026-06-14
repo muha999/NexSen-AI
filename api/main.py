@@ -13,6 +13,7 @@ from agents.muha.muha import muha_route
 from agents.fabi.fabi import fabi_analyze, fabi_check_produits
 from agents.zara.zara import zara_respond
 from agents.dija.dija import dija_respond
+from core.notifications import envoyer_notification_achat, detecter_intention_achat
 
 app = FastAPI(title="NexSen AI", description="Multi-Agent AI System")
 
@@ -38,7 +39,6 @@ class ChatResponse(BaseModel):
     evaluation: Optional[dict] = None
     routing: Optional[dict] = None
 
-# Signaux qui indiquent qu'AICHA ne peut pas répondre seule
 SIGNAUX_TRANSMISSION = [
     "transmettre", "équipe humaine", "je vais vérifier",
     "je n'ai pas", "pas d'informations", "pas accès"
@@ -55,22 +55,16 @@ def health():
 def chat(request: ChatRequest):
     history = [{"role": m.role, "content": m.content} for m in request.history]
 
-    # MUHA analyse et route
     routing = muha_route(request.message)
     agent_name = routing.get("agent", "AICHA")
     message_transforme = routing.get("message_transforme", request.message)
 
-    # Chaque agent répond selon son domaine
     if agent_name == "AICHA":
         response = aicha_respond(message_transforme, history)
 
-        # MUHA détecte si AICHA bloque sur une question produit
         response_lower = response.lower()
         if any(signal in response_lower for signal in SIGNAUX_TRANSMISSION):
-            # MUHA appelle FABI pour vérifier les produits
             info_produits = fabi_check_produits(request.message, history)
-
-            # MUHA redonne le contexte enrichi à AICHA
             prompt_enrichi = (
                 f"{request.message}\n\n"
                 f"Informations internes de FABI (NE PAS mentionner l'ID, "
@@ -78,6 +72,10 @@ def chat(request: ChatRequest):
                 f"{info_produits}"
             )
             response = aicha_respond(prompt_enrichi, history)
+
+        # Détection intention d'achat confirmée -> notification
+        if detecter_intention_achat(request.message, response):
+            envoyer_notification_achat(history, request.message, response)
 
     elif agent_name == "FABI":
         response = fabi_analyze(message_transforme, None, history)
@@ -88,7 +86,6 @@ def chat(request: ChatRequest):
     else:
         response = aicha_respond(message_transforme, history)
 
-    # IBRAHIMA évalue
     evaluation = ibrahima_evaluate(request.message, response, agent_name)
 
     return ChatResponse(

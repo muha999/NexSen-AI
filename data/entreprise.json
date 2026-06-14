@@ -2,12 +2,12 @@
   "nom": "Lumière Dorée",
   "description": "Boutique beauté, bien-être et lingerie à Guediawaye, Dakar",
   "contact": {
-    "telephone": "+221 77 155 35 45 ",
-    "whatsapp": "+221 77 155 35 45 ",
-    "wave": "+221 77 155 35 45 ",
-    "orange_money": "+221 77 155 35 45 "
+    "telephone": "+221 77 155 35 45",
+    "whatsapp": "+221 77 155 35 45",
+    "wave": "+221 77 155 35 45",
+    "orange_money": "+221 77 155 35 45"
   },
   "horaires": "Lundi - Samedi : 9h - 19h",
   "adresse": "Guediawaye, Dakar, Sénégal",
-  "moyens_paiement": ["Wave", "Orange Money", "Paiement à la livraison"]
+  "moyens_paiement": ["Wave", "Orange Money"]
 }
