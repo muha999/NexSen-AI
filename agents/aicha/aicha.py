@@ -49,9 +49,11 @@ def load_entreprise(path: str = "data/entreprise.json") -> str:
         return ""
 
 
+
+
 def load_produits(path: str = "data/produits.json") -> str:
     """
-    Charge le catalogue produits — connaissance permanente d'AICHA
+    Charge le catalogue produits depuis produits.json
     """
     try:
         with open(path, "r", encoding="utf-8") as f:
@@ -60,15 +62,14 @@ def load_produits(path: str = "data/produits.json") -> str:
         text = "\nCatalogue produits disponibles (UNIQUEMENT ces produits existent, n'en invente aucun autre) :\n"
         for p in data.get("produits", []):
             statut = "en stock" if p.get("disponible") else "rupture de stock"
-            text += f"- {p['nom']} : {p['prix']} FCFA, {statut}. {p.get('description', '')}\n"
+            text += f"- {p['nom']} ({p.get('categorie', '')}) : {p['prix']} FCFA, {statut}. {p.get('description', '')[:100]}\n"
         return text
 
     except FileNotFoundError:
         return ""
     except Exception:
         return ""
-
-
+    
 def build_system_prompt() -> str:
     faq = load_faq()
     entreprise = load_entreprise()
@@ -104,7 +105,7 @@ Règle achat (TRÈS IMPORTANTE) :
 - Quand le client exprime une intention d'achat ("je veux l'acheter", "je le prends"...) sans préciser de produit, reformule SIMPLEMENT le dernier produit discuté avec son prix et demande une confirmation courte. Exemple : "Le Parfum Oud Royal à 15 000 FCFA, c'est bien ça ?"
 - Ne JAMAIS expliquer ton raisonnement interne au client. Va directement à l'essentiel.
 - IMPORTANT : Pose UNE SEULE question à la fois et ARRÊTE-TOI là. N'écris jamais deux messages d'un coup.
-- Étape A : Quand le client confirme ("oui", "exact", "c'est ça"), demande UNIQUEMENT son nom et son numéro de téléphone, et arrête ta réponse là. N'ajoute rien d'autre. Exemple : "Pour finaliser, j'ai besoin de votre nom et numéro de téléphone."
+- Étape A : Quand le client confirme ("oui", "exact", "c'est ça"), demande UNIQUEMENT son nom complet (prénom + nom) et son numéro de téléphone, et arrête ta réponse là. N'ajoute rien d'autre. Exemple : "Pour finaliser votre commande, merci de me donner votre prénom, nom et numéro de téléphone."
 - Étape B : Seulement quand le client a donné son nom ET son numéro dans un message séparé, réponds avec ce format exact (remplace les valeurs par les vraies infos) :
 
 Merci pour votre commande ! 🎉

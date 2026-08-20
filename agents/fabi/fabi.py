@@ -2,6 +2,7 @@ from groq import Groq
 from dotenv import load_dotenv
 import os
 import json
+import urllib.request
 
 load_dotenv()
 
@@ -25,12 +26,14 @@ Règles importantes :
 - Sois professionnelle et concise
 - Réponds toujours en français
 - Pour les questions produits, donne le nom, le prix et la disponibilité clairement
-- - L'ID produit (ex: P001) est un identifiant interne pour MUHA/AICHA — ne jamais le mentionner dans une réponse destinée au client final
+- L'ID produit est un identifiant interne pour MUHA/AICHA — ne jamais le mentionner dans une réponse destinée au client final
 """
+
+TECHSTORE_API_URL = os.getenv("TECHSTORE_API_URL", "http://127.0.0.1:8000/api/produits/")
 
 def load_produits(path: str = "data/produits.json") -> dict:
     """
-    Charge les produits depuis le fichier JSON
+    Charge les produits depuis produits.json
     """
     try:
         with open(path, "r", encoding="utf-8") as f:
@@ -42,9 +45,6 @@ def load_produits(path: str = "data/produits.json") -> dict:
 
 
 def fabi_analyze(user_message: str, data: dict = None, conversation_history: list = None) -> str:
-    """
-    FABI analyse les données et répond aux questions
-    """
     if conversation_history is None:
         conversation_history = []
 
@@ -53,7 +53,6 @@ def fabi_analyze(user_message: str, data: dict = None, conversation_history: lis
         context = f"\nDonnées disponibles pour analyse :\n{data}\n"
 
     messages = [{"role": "system", "content": FABI_PROMPT + context}]
-
     recent_history = conversation_history[-10:]
     messages += recent_history
     messages.append({"role": "user", "content": user_message})
@@ -66,30 +65,22 @@ def fabi_analyze(user_message: str, data: dict = None, conversation_history: lis
             max_tokens=800
         )
         return response.choices[0].message.content
-
     except Exception as e:
         return f"⚠️ FABI est temporairement indisponible : {str(e)}"
 
 
 def fabi_check_produits(user_message: str, conversation_history: list = None) -> str:
-    """
-    FABI vérifie les produits disponibles selon la demande du client
-    Utilisée par MUHA pour la boucle de retraitement
-    """
     produits_data = load_produits()
     return fabi_analyze(user_message, produits_data, conversation_history)
 
 
 if __name__ == "__main__":
     print("📊 FABI est en ligne !\n")
-
     questions = [
-        "Quels parfums avez-vous disponibles ?",
-        "Avez-vous du thiouraye en stock ?",
+        "Quels smartphones avez-vous disponibles ?",
+        "Avez-vous des ordinateurs Dell en stock ?",
     ]
-
     history = []
-
     for question in questions:
         print(f"Question : {question}")
         reponse = fabi_check_produits(question, history)

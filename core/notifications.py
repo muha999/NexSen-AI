@@ -8,18 +8,37 @@ import json
 
 load_dotenv()
 
+def extraire_telephone(texte: str) -> str:
+    texte_clean = re.sub(r'[\s\-\.]', '', texte)
+    patterns = [
+        r'\+221(7[0-8]\d{7})',
+        r'00221(7[0-8]\d{7})',
+        r'(7[0-8]\d{7})',
+    ]
+    for pattern in patterns:
+        match = re.search(pattern, texte_clean)
+        if match:
+            numero = match.group(1)
+            return f"{numero[:2]} {numero[2:5]} {numero[5:7]} {numero[7:9]}"
+    return "Non fourni"
+
+def extraire_nom(message: str) -> str:
+    texte = message
+    texte = re.sub(r'\+?2?2?1?\s?[\s\-\.]?(7[0-8])[\s\-\.]?\d{3}[\s\-\.]?\d{2}[\s\-\.]?\d{2}', '', texte)
+    texte = re.sub(r'[,;\-]', ' ', texte)
+    texte = re.sub(r'\s+', ' ', texte).strip()
+    return texte if texte else "Non fourni"
+
 def extraire_infos_commande(history: list, message_client: str) -> dict:
-    """
-    Extrait nom, téléphone et produit depuis l'historique de conversation
-    """
     texte_complet = " ".join([m.get("content", "") for m in history]) + " " + message_client
 
-    tel_pattern = r"(\+221\s?)?(7[0-8])\s?\d{3}\s?\d{2}\s?\d{2}"
-    tel_match = re.search(tel_pattern, texte_complet)
-    telephone = tel_match.group(0) if tel_match else "Non fourni"
+    telephone = extraire_telephone(message_client)
+    nom = extraire_nom(message_client)
 
     produit = "Non identifié"
     prix = "Non identifié"
+    produit_id = None
+
     try:
         with open("data/produits.json", "r", encoding="utf-8") as f:
             data = json.load(f)
@@ -27,29 +46,46 @@ def extraire_infos_commande(history: list, message_client: str) -> dict:
             if p["nom"].lower() in texte_complet.lower():
                 produit = p["nom"]
                 prix = f"{p['prix']} FCFA"
+                produit_id = p["id"]
                 break
     except Exception:
         pass
-
-    nom = "Non fourni"
-    if tel_match:
-        nom_candidat = message_client.replace(tel_match.group(0), "").strip()
-        nom_candidat = re.sub(r"[,.\-]", "", nom_candidat).strip()
-        if nom_candidat:
-            nom = nom_candidat
 
     return {
         "nom": nom,
         "telephone": telephone,
         "produit": produit,
-        "prix": prix
+        "prix": prix,
+        "produit_id": produit_id
     }
 
 
+def update_stock(produit_id: str, quantite: int = 1) -> bool:
+    try:
+        with open("data/produits.json", "r", encoding="utf-8") as f:
+            data = json.load(f)
+
+        for p in data.get("produits", []):
+            if p["id"] == produit_id:
+                nouveau_stock = max(0, p["stock"] - quantite)
+                p["stock"] = nouveau_stock
+                if nouveau_stock == 0:
+                    p["disponible"] = False
+                    print(f"⚠️ {p['nom']} est maintenant en rupture de stock !")
+                else:
+                    print(f"✅ Stock mis à jour : {p['nom']} → {nouveau_stock} unités restantes")
+                break
+
+        with open("data/produits.json", "w", encoding="utf-8") as f:
+            json.dump(data, f, ensure_ascii=False, indent=2)
+        return True
+
+    except Exception as e:
+        print(f"⚠️ Erreur mise à jour stock : {str(e)}")
+        return False
+
+
 def envoyer_notification_achat(history: list, message_client: str, reponse_aicha: str) -> bool:
-    """
-    Envoie un email récapitulatif propre au boutiquier
-    """
     sender = os.getenv("EMAIL_SENDER")
     password = os.getenv("EMAIL_PASSWORD")
     receiver = os.getenv("EMAIL_RECEIVER")
@@ -59,6 +95,9 @@ def envoyer_notification_achat(history: list, message_client: str, reponse_aicha
         return False
 
     infos = extraire_infos_commande(history, message_client)
+
+    if infos["produit_id"]:
+        update_stock(infos["produit_id"])
 
     try:
         msg = MIMEMultipart()
@@ -94,8 +133,5 @@ NexSen AI 🌍
 
 
 def detecter_intention_achat(message_client: str, reponse_aicha: str) -> bool:
-    """
-    Détecte si AICHA a donné le message final de réservation
-    """
     reponse_lower = reponse_aicha.lower()
     return "est réservé" in reponse_lower and "wave" in reponse_lower

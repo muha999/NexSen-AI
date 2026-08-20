@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import aichaProfile from "./assets/aichaprofile.png";
 import Dashboard from "./Dashboard";
 
-const API_URL = "http://127.0.0.1:8000";
+const API_URL = "http://127.0.0.1:8001";
 
 function App() {
   const [page, setPage] = useState("chat");
